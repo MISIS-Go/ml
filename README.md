@@ -1,4 +1,4 @@
-```mermaid
+
 ```mermaid
 flowchart TD
     subgraph BACKEND["⚙️ Backend — Rust / Tauri"]
@@ -43,6 +43,4 @@ flowchart TD
     style ML       fill:#0f172a,color:#818cf8,stroke:#4338ca
     style RESPONSE fill:#022c22,color:#6ee7b7,stroke:#059669
     style FRONTEND fill:#1c1917,color:#fdba74,stroke:#c2410c
-```
-
 ```
