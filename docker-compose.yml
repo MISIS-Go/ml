@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: self-mind-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./models/Modelfile:/root/Modelfile
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: self-mind-ollama-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    volumes:
+      - ./models/Modelfile:/root/Modelfile
+    entrypoint: >
+      sh -c "
+        ollama pull qwen2.5:3b &&
+        ollama create self-mind-ai -f /root/Modelfile &&
+        echo '✅ Готово'
+      "
+    restart: "no"
+
+  ml-api:
+    build: .
+    container_name: self-mind-ml
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - OLLAMA_MODEL=self-mind-ai
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: always
+
+volumes:
+  ollama_data:
